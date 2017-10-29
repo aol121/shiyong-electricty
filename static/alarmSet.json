@@ -1,0 +1,89 @@
+{
+    "list": [
+      {
+          "num": "100001",
+          "name": "设备1",
+          "content": "温度",
+          "model": "JFDTD/M",
+          "rule": ">10℃"
+      }, 
+      {
+          "num": "100002",
+          "name": "设备1",
+          "content": "温度",
+          "model": "JFDTD/M",
+          "rule": ">10℃"
+      }, 
+      {
+          "num": "100003",
+          "name": "设备1",
+          "content": "温度",
+          "model": "JFDTD/M",
+          "rule": ">10℃"
+      }, 
+      {
+          "num": "100004",
+          "name": "设备1",
+          "content": "温度",
+          "model": "JFDTD/M",
+          "rule": ">10℃"
+      }, 
+      {
+          "num": "100005",
+          "name": "设备1",
+          "content": "温度",
+          "model": "JFDTD/M",
+          "rule": ">10℃"
+      }, 
+      {
+          "num": "100006",
+          "name": "设备1",
+          "content": "温度",
+          "model": "JFDTD/M",
+          "rule": ">10℃"
+      }, 
+      {
+          "num": "100007",
+          "name": "设备1",
+          "content": "温度",
+          "model": "JFDTD/M",
+          "rule": ">10℃"
+      }, 
+      {
+          "num": "100008",
+          "name": "设备1",
+          "content": "温度",
+          "model": "JFDTD/M",
+          "rule": ">10℃"
+      }, 
+      {
+          "num": "100009",
+          "name": "设备1",
+          "content": "温度",
+          "model": "JFDTD/M",
+          "rule": ">10℃"
+      }, 
+      {
+          "num": "100010",
+          "name": "设备1",
+          "content": "温度",
+          "model": "JFDTD/M",
+          "rule": ">10℃"
+      }, 
+      {
+          "num": "100011",
+          "name": "设备1",
+          "content": "温度",
+          "model": "JFDTD/M",
+          "rule": ">10℃"
+      }, 
+      {
+          "num": "100012",
+          "name": "设备1",
+          "content": "温度",
+          "model": "JFDTD/M",
+          "rule": ">10℃"
+      }
+    
+    ]
+}
