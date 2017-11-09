@@ -72,7 +72,7 @@
           </el-col>
           <el-col :span="9" :offset="2">
             <div class="grid-content">
-              <el-form-item  label="角色">
+              <el-form-item label="角色">
                 <el-select v-model="ruleForm3.roleId" disabled placeholder="请选择角色">
                   <el-option v-for="role in roleList" :label="role.name" :value="role.id"></el-option>
                 </el-select>
@@ -124,15 +124,15 @@
           checkPass: ''
         },
         ruleForm3: { //修改个人信息弹窗
-          id:'',
+          id: '',
           username: '',
           name: '',
           mobile: '',
           roleId: '',
-          receiveAlarmMessage:''
+          receiveAlarmMessage: ''
         },
         roleList: [],
-        isDisabled:false,
+        isDisabled: false,
         rules2: { //修改密码验证规则
           pass: [{
             validator: validatePass, //指定验证器
@@ -153,38 +153,62 @@
       }
     },
     methods: {
-      resetForm(formName) {//重置弹框数据
+      resetForm(formName) { //重置弹框数据
         this.dialogFormVisible = false
         this.dialogFormVisible3 = false
         this.$refs[formName].resetFields();
       },
-      editOwnMess() {//修改个人信息
-          this.$axios.post('/api/user/update',{
-            params:this.ruleForm3            
-          }).then((res)=>{
-            console.log('165',res.data)
-            if(res.data.success){
-              this.$message.success(res.data.message)
-              this.dialogFormVisible3 = false;
+      editOwnMess() { //修改个人信息
+        this.$axios.post('api/user/update', {
+          params: this.ruleForm3
+        }).then((res) => {
+          console.log('165', res.data)
+          console.log(this.$router.app._route.fullPath)
+          if(res.data.success) {
+            this.$message.success(res.data.message)
+            this.dialogFormVisible3 = false;
+          }else if(res.data.code==200){
+              this.$message.error("您已下线请重新登录！")
+              this.$router.push('/login');
+              localStorage.removeItem('ms_username')
+              localStorage.removeItem('ms_userid')
+            }else {
+              this.$message.error("请求出错")
             }
-          })
+        })
       },
       logout() {
-        this.$axios.post('/api/auth/logout').then((res) => {
-          this.$message(res.data.message)
-          this.$router.push('/login');
-          localStorage.removeItem('ms_username')
-          localStorage.removeItem('ms_userid')
-        }).catch((e) => {
-          this.$router.push('/login');
-        })
+          this.open2();
+      },
+      open2() { //注销提示
+        this.$confirm('此操作将”退出登录“返回登录界面, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+
+        }).then(() => {
+          this.$axios.post('api/auth/logout').then((res) => {
+            this.$message(res.data.message)
+            this.$router.push('/login');
+            localStorage.removeItem('ms_username')
+            localStorage.removeItem('ms_userid')
+          }).catch((e) => {
+            this.$router.push('/login');
+          })
+
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消操作'
+          });
+        });
       },
       submitForm(formName) {
 
         this.$refs[formName].validate((valid) => {
           if(valid) {
 
-            this.$axios.post('/api/user/editPassword', {
+            this.$axios.post('api/user/editPassword', {
               params: {
                 id: localStorage.getItem('ms_userid'),
                 originalPassword: this.ruleForm2.oldPass,
@@ -214,11 +238,11 @@
           this.dialogFormVisible3 = true
 
           function getRoleList() {
-            return self.$axios.get('/api/role/getList');
+            return self.$axios.get('api/role/getList');
           }
 
           function getCurrentUser() {
-            return self.$axios.get('/api/user/get', {
+            return self.$axios.get('api/user/get', {
               params: {
                 params: {
                   id: localStorage.getItem('ms_userid')
@@ -228,25 +252,22 @@
           }
 
           this.$axios.all([getRoleList(), getCurrentUser()])
-            .then(this.$axios.spread((role, user)=>{
+            .then(this.$axios.spread((role, user) => {
               this.roleList = role.data.data
-              console.log('219',user.data.data)
+              console.log('219', user.data.data)
               let data = user.data.data
-              this.ruleForm3={ //修改个人信息弹窗
-                id:data.id,
+              this.ruleForm3 = { //修改个人信息弹窗
+                id: data.id,
                 username: data.username,
                 name: data.name,
                 mobile: data.mobile,
                 roleId: data.roleId,
-                receiveAlarmMessage:data.receiveAlarmMessage
+                receiveAlarmMessage: data.receiveAlarmMessage
               }
               this.isDisabled = true;
-              
+
             }));
-          /*this.$axios.get('/api/role/getList').then((res) => {
-            //          console.log('195',res.data.data)
-            this.roleList = res.data.data
-          })*/
+      
 
         } else if(command === 'changePassWord') {
           this.dialogFormVisible = true
@@ -276,7 +297,8 @@
     width: 250px;
     height: 69px;
     text-align: center;
-    background: url(../../../static/img/logo.jpg) no-repeat center center;
+    background: url(../../../static/img/logo.png) no-repeat center center;
+    background-size: 88%;
   }
   
   .el-dropdown-link {

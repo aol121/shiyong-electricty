@@ -9,14 +9,14 @@
           <el-row>
             <el-col :span="12">
               <div class="grid-content bg-purle">
-                <el-form-item required label="用户名（必填）">
+                <el-form-item required label="用户名（必填）" prop="username">
                   <el-input :disabled="isDisabled" v-model="formLabelAlign.username"></el-input>
                 </el-form-item>
               </div>
             </el-col>
             <el-col :span="12">
               <div class="grid-content bg-purle">
-                <el-form-item required label="姓名（必填）">
+                <el-form-item required label="姓名（必填）" prop="name">
                   <el-input v-model="formLabelAlign.name"></el-input>
                 </el-form-item>
               </div>
@@ -38,8 +38,7 @@
               <el-form-item label="角色">
                 <el-select v-model="formLabelAlign.roleId" placeholder="请选择角色">
                   <el-option v-for="role in roleList" :label="role.name" :value="role.id"></el-option>
-                  <!--<el-option label="管理员" value="管理员1"></el-option>
-                  <el-option label="员工" value="员工1"></el-option>-->
+            
                 </el-select>
               </el-form-item>
             </el-col>
@@ -51,7 +50,7 @@
 
         </div>
         <footer class="footer-tip">
-          *确认后用户名不可更改，初始密码为：123456，开通账号后请及时修改密码！
+          * 确认后用户名不可更改，初始密码为：123456，开通账号后请及时修改密码！
         </footer>
       </el-dialog>
       <!--弹出对话框 End-->
@@ -86,25 +85,28 @@
     data() {
       return {
         url: {
-          userList: '/api/user/getPageList',
-          roleList: '/api/role/getList',
-          addUser: '/api/user/add',
-          updateUser: '/api/user/update',
-          deletUser: '/api/user/delete'
+          userList: 'api/user/getPageList',
+          roleList: 'api/role/getList',
+          addUser: 'api/user/add',
+          updateUser: 'api/user/update',
+          deletUser: 'api/user/delete'
         },
-        rules: {
-          mobile: [
+        rules: {//检验手机号码
+          username:[
             {
               required: true,
-              message: '电话不能为空',
+              message: '用户名不能为空',
               
             },
+          ],
+          name:[
             {
-              type: 'number',
-              message: '电话必须为数字',
-              trigger: 'blur'
-            }
+              required: true,
+              message: '姓名不能为空',
+              
+            },
           ]
+        
         },
         deleUserId:'',
         dialogTitle: '新增用户',
@@ -116,7 +118,7 @@
         select_cate: '',
         select_word: '',
         del_list: [],
-        is_search: false,
+//      is_search: false,
         dialogFormVisible: false,
         labelPosition: 'top',
         formLabelAlign: { //弹出框数据
@@ -146,7 +148,6 @@
     },
     methods: {
       submitDialog(formName) {
-
         this.$refs[formName].validate((valid) => {
           if(valid) {
             if(this.dialogTitle === '新增用户') {
@@ -176,7 +177,6 @@
           } else {
             this.$message.error(res.data.message)
           }
-          //        console.log(res.data.message)
         })
       },
       checkAddUser() {
@@ -196,7 +196,7 @@
           } else {
             this.$message.error(res.data.message)
           }
-          //        console.log(res.data.message)
+  
         })
       },
       addUser() { //新增用户
@@ -232,7 +232,6 @@
             }
           });
         }
-
         function getRoleList() {
           return self.$axios.get(self.url.roleList);
         }
@@ -243,22 +242,17 @@
             if(userList.data.success) {
               self.tableData = userList.data.data.records;
               self.totalCount = userList.data.data.recordCount;
-            } else { //请求失败
-
+            }else if(res.data.code==200){
+              this.$message.error("您已下线请重新登录！")
+              this.$router.push('/login');
+              localStorage.removeItem('ms_username')
+              localStorage.removeItem('ms_userid')
+            }else { //请求失败
+              this.$message.error("请求出错")
             }
             self.roleList = roleList.data.data;
-            console.log(userList.data)
-            console.log(roleList.data)
+         
           }));
-      },
-      search() {
-        this.is_search = true;
-      },
-      formatter(row, column) {
-        return row.address;
-      },
-      filterTag(value, row) {
-        return row.tag === value;
       },
       handleEdit(index, row) { //编辑用户
         //      this.$message('编辑第' + (index + 1) + '行');
@@ -273,16 +267,14 @@
           name: row.name,
           mobile: row.mobile - 0,
           receiveAlarmMessage: !!(row.receiveAlarmMessage),
-//        roleName: row.roleName,
           roleId: row.roleId
         }
         this.isDisabled = true;
       },
-      handleDelete(index, row) {
-        console.log('287=',row)
+      handleDelete(index, row) { //删除用户      
         this.open2(row.id);      
       },
-      open2(id) {//删除提示
+      open2(id) {//删除前提示
         this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -295,11 +287,21 @@
               id:id
             }
           }).then((res)=>{
-            this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
-          this.getData();
+            if(res.data.success){
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+              this.getData();
+            }else if(res.data.code==200){
+              this.$message.error("您已下线请重新登录！")
+              this.$router.push('/login');
+              localStorage.removeItem('ms_username')
+              localStorage.removeItem('ms_userid')
+            }else {
+              this.$message.error("请求出错")
+            }
+            
           })
           
         }).catch(() => {
@@ -345,13 +347,19 @@
   }
   
   .footer-tip {
+    
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
     text-align: center;
-    padding: 3px 0;
+    padding: 3px;
     color: #ff8a8e;
     background-color: #fde8e7;
+    word-break: keep-all;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    
   }
 </style>

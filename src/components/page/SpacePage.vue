@@ -1,6 +1,7 @@
 <template>
   <div class="space">
-  	<img src="../../../dist/static/img/logo.jpg"/>
+
+  	<img src="../../../static/img/logo.png"/>
   </div>
 </template>
 
@@ -14,5 +15,8 @@
     height:100%;
     align-items: center;
     justify-content: center;
+  }
+  .space img {
+    width:35%;
   }
 </style>

@@ -8,10 +8,8 @@ import 'element-ui/lib/theme-default/index.css';    // 默认主题
 import "babel-polyfill";
 
 
-/*// 引用API文件
-import api from './config/api'
-// 将API方法绑定到全局
-Vue.prototype.$api = api*/
+
+
 
 Vue.use(ElementUI);
 Vue.prototype.$axios = axios;// 将axios绑定到全局

@@ -15,11 +15,11 @@ export default new Router({
             children:[
                 {
                     path: '/',
-                    component: resolve => require(['../components/page/SpacePage.vue'], resolve)   // 实时状态
+                    component: resolve => require(['../components/page/SpacePage.vue'], resolve)   // 空白页
                 },
                 {
                     path: '/space-page',
-                    component: resolve => require(['../components/page/SpacePage.vue'], resolve)   // 实时状态
+                    component: resolve => require(['../components/page/SpacePage.vue'], resolve)   // 空白页
                 },
                 {
                     path: '/real-time-status',
@@ -50,6 +50,29 @@ export default new Router({
         {
             path: '/login',
             component: resolve => require(['../components/page/Login.vue'], resolve)
+        },
+        {
+            path: '/mobile',
+            component: resolve => require(['../components/common/mobileHome.vue'], resolve),
+            children:[
+                {
+                    path: '/',
+                    component: resolve => require(['../components/page/RealTimeStatus.vue'], resolve)    // 实时状态
+                },
+                {
+                    path: '/mobile/real-time-status',
+                    component: resolve => require(['../components/page/RealTimeStatus.vue'], resolve)    // 实时状态
+                },
+                {
+                    path: '/mobile/historic-record',
+                    component: resolve => require(['../components/page/HistoricRecord.vue'], resolve)    // 历史记录
+                },
+                {
+                    path: '/mobile/alarm-record',
+                    component: resolve => require(['../components/page/AlarmRecord.vue'], resolve)    // 告警记录
+                },
+                
+            ]
         },
     ]
 })

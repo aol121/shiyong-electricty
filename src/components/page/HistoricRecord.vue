@@ -1,135 +1,189 @@
 <template>
-    <div class="table">
+  <div class="table">
 
-        <div class="handle-box">
-            <el-select v-model="select_cate" placeholder="选择设备" class="handle-select mr10">
-                <el-option key="0" label="选择设备" value=""></el-option>
-                <el-option key="1" label="李" value="李"></el-option>
-                <el-option key="2" label="设备2" value="设备2"></el-option>
-            </el-select>
-            <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
-            <el-button type="primary" icon="search" @click="search">查询</el-button>
-        </div>
-        <el-table :data="data" stripe style="width: 100%" ref="multipleTable" >
-            <el-table-column prop="num" label="设备编号" sortable width="150">
-            </el-table-column>
-            <el-table-column prop="name" label="设备名称" width="120">
-            </el-table-column>
-            <el-table-column prop="content" label="采集内容">
-            </el-table-column>
-            <el-table-column prop="params" label="采集参数">
-            </el-table-column>
-            <el-table-column prop="time" label="采集时间" sortable width="200">
-            </el-table-column>
-        </el-table>
-        <div class="pagination">
-            <el-pagination
-                    @current-change ="handleCurrentChange"
-                    layout="prev, pager, next"
-                    :total="1000">
-            </el-pagination>
-        </div>
+    <div class="handle-box">
+      <el-select v-model="deviceId" placeholder="选择设备" class="handle-select mr10">
+        <el-option label="不指定设备" value=""></el-option>
+        <el-option v-for="device in deviceList" :label="device.name" :value="device.id"></el-option>
+
+      </el-select>
+  
+      <el-date-picker
+        v-model="value1"
+        type="datetime"
+        placeholder="选择开始时间">
+      </el-date-picker>
+      <el-date-picker
+        v-model="value2"
+        type="datetime"
+        placeholder="选择结束时间">
+      </el-date-picker>
+      <el-button type="primary" icon="search" @click="search">查询</el-button>
     </div>
+    <el-table :data="data" stripe style="width: 100%" ref="multipleTable">
+      <el-table-column prop="deviceCode" label="设备编号" sortable min-width="120">
+      </el-table-column>
+      <el-table-column prop="deviceName" label="设备名称" min-width="120">
+      </el-table-column>
+      <el-table-column prop="fieldName" label="采集内容" min-width="120">
+      </el-table-column>
+      <el-table-column prop="value" label="采集参数" min-width="120">
+      </el-table-column>
+      <el-table-column prop="updateDate" label="采集时间" sortable min-width="180">
+      </el-table-column>
+    </el-table>
+    <div class="pagination">
+      <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="recordCount">
+      </el-pagination>
+    </div>
+  </div>
 </template>
 
 <script>
-    export default {
-        data() {
-            return {
-                url: './static/deviceData.json',
-                tableData: [],
-                cur_page: 1,
-                multipleSelection: [],
-                select_cate: '',
-                select_word: '',
-                del_list: [],
-                is_search: false
-            }
+  export default {
+    data() {
+      return {
+        url: {
+          historicList: 'api/data/getPageList',
+          deviceList: 'api/device/getPageList', //设备列表
         },
-        created(){
-            this.getData();
-        },
-        computed: {
-            data(){
-                const self = this;
-                return self.tableData.filter(function(d){
-                  return d;
-                    /*let is_del = false;
-                    for (let i = 0; i < self.del_list.length; i++) {
-                        if(d.name === self.del_list[i].name){
-                            is_del = true;
-                            break;
-                        }
-                    }
-                    if(!is_del){
-                        if(d.content.indexOf(self.select_cate) > -1 && 
-                            (d.name.indexOf(self.select_word) > -1 ||
-                            d.content.indexOf(self.select_word) > -1)
-                        ){
-                            return d;
-                        }
-                    }*/
-                })
-            }
-        },
-        methods: {
-            handleCurrentChange(val){
-                this.cur_page = val;
-                this.getData();
-            },
-            getData(){
-                let self = this;
-                /*if(process.env.NODE_ENV === 'development'){
-                    self.url = '/ms/table/list';
-                };
-                self.$axios.post(self.url, {page:self.cur_page}).then((res) => {
-                    self.tableData = res.data.list;
-                })*/
-               self.$axios.get(self.url).then((res) => {
-                    self.tableData = res.data.list;
-                })
-               
-            },
-            search(){
-                this.is_search = true;
-            },
-            formatter(row, column) {
-                return row.address;
-            },
-            filterTag(value, row) {
-                return row.tag === value;
-            },
-            handleEdit(index, row) {
-                this.$message('编辑第'+(index+1)+'行');
-            },
-            handleDelete(index, row) {
-                this.$message.error('删除第'+(index+1)+'行');
-            },
-            delAll(){
-                const self = this,
-                    length = self.multipleSelection.length;
-                let str = '';
-                self.del_list = self.del_list.concat(self.multipleSelection);
-                for (let i = 0; i < length; i++) {
-                    str += self.multipleSelection[i].name + ' ';
-                }
-                self.$message.error('删除了'+str);
-                self.multipleSelection = [];
-            },
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
-            }
+        deviceList: [], //设备列表
+        deviceId: '', //用于查询设备时传参
+        tableData: [],
+        cur_page: 1,
+        recordCount: 1,
+        params:{},//查询时用到的参数
+        value1:'',
+        value2:''
+
+      }
+
+    },
+    created() {
+      this.getData();
+    },
+    computed: {
+      data() {
+        const self = this;
+        return self.tableData.filter(function(d) {        
+          return d;
+
+        })
+      }
+    },
+    methods: {
+      handleCurrentChange(val) {
+        this.cur_page = val;
+        this.getData();
+      },
+      getData() {
+        let self = this;
+        function historicList() {
+
+            return self.$axios.get(self.url.historicList, {
+              params: {
+                params:self.params,
+                pageIndex: self.cur_page - 1,
+                pageSize: 10
+              }
+            });         
         }
+
+        function deviceList() {
+          return self.$axios.get(self.url.deviceList, {
+            params: {
+              pageIndex: 0,
+              pageSize: 9999
+            }
+          });
+        }
+        self.$axios.all([historicList(), deviceList()])
+          .then(self.$axios.spread((res, deviceList) => {
+            //        self.tableData = res.data.list;
+            console.log(res.data.data)
+            if(res.data.success) {
+              self.tableData = res.data.data.records
+              self.recordCount = res.data.data.recordCount
+            }
+            if(deviceList.data.success) {
+              self.deviceList = deviceList.data.data.records
+            }
+
+          }))
+
+      },
+      search() {
+        console.log(new Date(this.value1).getTime())
+        this.params = {};
+        let flag = true;
+        let value5 = [];
+        if(this.deviceId) {
+          console.log('151', this.deviceId)
+          this.params.deviceId = this.deviceId
+        }
+        if(this.value1) {
+          console.log('168',this.value1)
+          let d = new Date(this.value1)
+          value5[0] = d.getFullYear() + '-' +
+              (d.getMonth() < 9 ? "0" + (d.getMonth() + 1) : (d.getMonth() + 1)) + '-' +
+              (d.getDate() < 10 ? "0" + d.getDate() : d.getDate()) + ' ' +
+              (d.getHours() < 10 ? "0" + d.getHours() : d.getHours()) + ':' +
+              (d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes()) + ':' +
+              (d.getSeconds() < 10 ? "0" + d.getSeconds() : d.getSeconds());                 
+              this.params.createDate__gt = value5[0]
+
+        }
+        if(this.value2) {
+          let d = new Date(this.value2) 
+          value5[1] = d.getFullYear() + '-' +
+              (d.getMonth() < 9 ? "0" + (d.getMonth() + 1) : (d.getMonth() + 1)) + '-' +
+              (d.getDate() < 10 ? "0" + d.getDate() : d.getDate()) + ' ' +
+              (d.getHours() < 10 ? "0" + d.getHours() : d.getHours()) + ':' +
+              (d.getMinutes() < 10 ? "0" + d.getMinutes() : d.getMinutes()) + ':' +
+              (d.getSeconds() < 10 ? "0" + d.getSeconds() : d.getSeconds());
+
+          this.params.createDate__lt = value5[1]
+        }
+        console.log('218',value5)
+        console.log('219',this.params)
+        if(this.value1 && this.value2){
+          if(new Date(this.value1).getTime()>new Date(this.value2).getTime()){
+            this.$message.error("开始时间不能晚于结束时间！")
+            this.value1 = ''
+            this.value2 = ''
+            flag = false;
+          }else {
+            flag = true;
+          }
+        }
+        if(flag){
+          if((this.deviceId || value5)) {
+            this.getData()
+          }else {
+            this.params = {}
+            this.getData()
+          }
+        }        
+      }
+
     }
+  }
 </script>
 
 <style scoped>
-
-.handle-select{
+  .handle-select {
     width: 120px;
-}
-.handle-input{
+  }
+  
+  .handle-input {
     width: 300px;
     display: inline-block;
-}
+  }
+  
+  
+  @media screen and (max-width:480px){
+    .handle-box {
+      line-height: 41px;
+    }
+  }
 </style>

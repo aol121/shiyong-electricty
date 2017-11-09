@@ -28,36 +28,7 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: { 
-   
       '/api': {
-        target: 'http://127.0.0.1:8088',
-        changeOrigin: true
-      },  
-      '/auth': {
-        target: 'http://127.0.0.1:8088',
-        changeOrigin: true
-      },
-      '/user': {
-        target: 'http://127.0.0.1:8088',
-        changeOrigin: true
-      },
-      '/role': {
-        target: 'http://127.0.0.1:8088',
-        changeOrigin: true
-      },
-      '/device': {
-        target: 'http://127.0.0.1:8088',
-        changeOrigin: true
-      },
-      '/deviceInfo': {
-        target: 'http://127.0.0.1:8088',
-        changeOrigin: true
-      },
-      '/alarm': {
-        target: 'http://127.0.0.1:8088',
-        changeOrigin: true
-      },
-      '/data': {
         target: 'http://127.0.0.1:8088',
         changeOrigin: true
       }

@@ -79,7 +79,7 @@
         },
         methods:{
           getVisiableList(){
-            this.$axios.get('/api/user/get',{
+            this.$axios.get('api/user/get',{
               params:{
                 params:{
                   id:localStorage.getItem('ms_userid')
