@@ -82,7 +82,7 @@
             this.$axios.get('api/user/get',{
               params:{
                 params:{
-                  id:localStorage.getItem('ms_userid')
+                  id:sessionStorage.getItem('ms_userid')
                 }
               }
             }).then((res)=>{

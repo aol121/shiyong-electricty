@@ -148,7 +148,7 @@
     },
     computed: {
       username() {
-        let username = localStorage.getItem('ms_username');
+        let username = sessionStorage.getItem('ms_username');
         return username ? username : this.name;
       }
     },
@@ -170,8 +170,8 @@
           }else if(res.data.code==200){
               this.$message.error("您已下线请重新登录！")
               this.$router.push('/login');
-              localStorage.removeItem('ms_username')
-              localStorage.removeItem('ms_userid')
+              sessionStorage.removeItem('ms_username')
+              sessionStorage.removeItem('ms_userid')
             }else {
               this.$message.error("请求出错")
             }
@@ -190,8 +190,10 @@
           this.$axios.post('api/auth/logout').then((res) => {
             this.$message(res.data.message)
             this.$router.push('/login');
-            localStorage.removeItem('ms_username')
-            localStorage.removeItem('ms_userid')
+            sessionStorage.removeItem('ms_username')
+            sessionStorage.removeItem('ms_userid')
+            /*localStorage.removeItem('ms_username')
+            localStorage.removeItem('ms_userid')*/
           }).catch((e) => {
             this.$router.push('/login');
           })
@@ -210,7 +212,7 @@
 
             this.$axios.post('api/user/editPassword', {
               params: {
-                id: localStorage.getItem('ms_userid'),
+                id: sessionStorage.getItem('ms_userid'),
                 originalPassword: this.ruleForm2.oldPass,
                 newPassword: this.ruleForm2.checkPass
               }
@@ -245,7 +247,7 @@
             return self.$axios.get('api/user/get', {
               params: {
                 params: {
-                  id: localStorage.getItem('ms_userid')
+                  id: sessionStorage.getItem('ms_userid')
                 }
               }
             });

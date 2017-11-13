@@ -60,7 +60,11 @@
 
     },
     created() {
-      this.getData();
+      if(sessionStorage.getItem('ms_userid') && sessionStorage.getItem('ms_username')){
+        this.getData();       
+      }else {
+        this.$router.push('/login');
+      }
     },
     computed: {
       data() {

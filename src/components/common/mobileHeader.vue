@@ -66,8 +66,10 @@
           this.$axios.post('api/auth/logout').then((res) => {
             this.$message(res.data.message)
             this.$router.push('/login');
-            localStorage.removeItem('ms_username')
-            localStorage.removeItem('ms_userid')
+            sessionStorage.removeItem('ms_username')
+            sessionStorage.removeItem('ms_userid')
+            /*localStorage.removeItem('ms_username')
+            localStorage.removeItem('ms_userid')*/
           }).catch((e) => {
             this.$router.push('/login');
           })

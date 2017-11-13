@@ -34,13 +34,18 @@
 
     },
     mounted(){
-      this.getData();
-      clearInterval(this.timer)
-      this.timer=setInterval(()=>{
-        this.pageIndex=1;
-        this.realTimeData=[];
-        this.getData()
-      },180000)
+      if(sessionStorage.getItem('ms_userid') && sessionStorage.getItem('ms_username')){
+        this.getData();
+        clearInterval(this.timer)
+        this.timer=setInterval(()=>{
+          this.pageIndex=1;
+          this.realTimeData=[];
+          this.getData()
+        },180000)
+      }else {
+        this.$router.push('/login');
+      }
+      
     },
 
     destroyed () {

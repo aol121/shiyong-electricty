@@ -135,7 +135,11 @@
       }
     },
     mounted() { //页面创建完成时
-      this.getData();
+      if(sessionStorage.getItem('ms_userid') && sessionStorage.getItem('ms_username')){
+        this.getData();       
+      }else {
+        this.$router.push('/login');
+      }
 
     },
     computed: {
@@ -158,7 +162,7 @@
     methods: {
 
       loadFeildList(e, obj, i) { //采集器执行 change 事件
-
+        this.formLabelAlign.content = [];
         let fieldList = []
         for(let a in obj) {
           if(obj[a].id == e) { //找出对应的 采集器类型
@@ -178,9 +182,7 @@
         this.fieldList = fieldList //采集器对应的 所有采集内容
 
         //编辑时已选中内容处理
-
         if(this.formLabelAlign.selectedContent && this.formLabelAlign.selectedContent.length > 0) {
-
           let selectFieldList = []
           for(let i in fieldList) {
             for(let j in this.formLabelAlign.selectedContent) {
@@ -193,7 +195,6 @@
           }
           this.cacheContent = this.formLabelAlign.content = selectFieldList
           console.log('195', this.cacheContent)
-
         }
       },
       submitForm(formName) { //提交表单，根据不同 情况执行 添加还是编辑
@@ -207,14 +208,11 @@
         const self = this;
         let ruleConfigList = []; //创建临时存放变量
         for(let i in self.formLabelAlign.content) {
-          if(JSON.stringify(ruleConfigList).indexOf(self.formLabelAlign.content[i].id) == -1) { //不存在
+          if(JSON.stringify(ruleConfigList).indexOf(self.formLabelAlign.content[i].ruleId) == -1) { //不存在
             ruleConfigList.push({
               ruleId: self.formLabelAlign.content[i].ruleId,
               fieldList: [{
-                evalExpression: '',
-                length: '',
-                ruleId: '',
-                startIndex: '',
+                
                 fieldCode: self.formLabelAlign.content[i].fieldCode,
                 fieldName: self.formLabelAlign.content[i].fieldName
               }]
@@ -222,7 +220,7 @@
             })
           } else {
             for(let j in ruleConfigList) {
-              if(ruleConfigList[j].id == self.formLabelAlign.content[i].id) {
+              if(ruleConfigList[j].ruleId == self.formLabelAlign.content[i].ruleId) {
                 ruleConfigList[j].fieldList.push({
                   fieldCode: self.formLabelAlign.content[i].fieldCode,
                   fieldName: self.formLabelAlign.content[i].fieldName
@@ -301,6 +299,7 @@
         const self = this;
         self.$refs[formName].validate((valid) => {
           if(valid) {
+            console.log('305',self.formLabelAlign.content)
             self.$axios.post(self.url.addDevice, {
               params: {
                 name: self.formLabelAlign.name,
@@ -325,8 +324,8 @@
               } else if(res.data.code == 200) {
                 this.$message.error("您已下线请重新登录！")
                 this.$router.push('/login');
-                localStorage.removeItem('ms_username')
-                localStorage.removeItem('ms_userid')
+                sessionStorage.removeItem('ms_username')
+                sessionStorage.removeItem('ms_userid')
               } else {
                 self.$message.error(res.data.message)
               }
@@ -411,8 +410,8 @@
           } else if(res.data.code == 200) {
             this.$message.error("您已下线请重新登录！")
             this.$router.push('/login');
-            localStorage.removeItem('ms_username')
-            localStorage.removeItem('ms_userid')
+            sessionStorage.removeItem('ms_username')
+            sessionStorage.removeItem('ms_userid')
           } else {
             this.$message.error("请求出错")
           }

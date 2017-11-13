@@ -107,7 +107,11 @@
       }
     },
     created() { //页面创建完成时
-      this.getData();
+      if(sessionStorage.getItem('ms_userid') && sessionStorage.getItem('ms_username')){
+        this.getData();       
+      }else {
+        this.$router.push('/login');
+      }
     },
     computed: {
       data() {
@@ -280,8 +284,8 @@
             } else if(res.data.code == 200) {
               this.$message.error("您已下线请重新登录！")
               this.$router.push('/login');
-              localStorage.removeItem('ms_username')
-              localStorage.removeItem('ms_userid')
+              sessionStorage.removeItem('ms_username')
+              sessionStorage.removeItem('ms_userid')
             } else {
               this.$message.error("请求出错")
             }

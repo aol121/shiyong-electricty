@@ -131,8 +131,10 @@
               responseType: 'json' // default
             }).then((res) => {
               if(res.data.success) {
-                localStorage.setItem('ms_username', self.ruleForm.username);
-                localStorage.setItem('ms_userid', res.data.data.id);
+                sessionStorage.setItem('ms_username', self.ruleForm.username);
+                sessionStorage.setItem('ms_userid', res.data.data.id);
+                /*localStorage.setItem('ms_username', self.ruleForm.username);
+                localStorage.setItem('ms_userid', res.data.data.id);*/
                 self.getList = res.data.data.accessModuleCodeList
                 if(!self.isMobile) {
                   if(!res.data.data.accessModuleCodeList) {
